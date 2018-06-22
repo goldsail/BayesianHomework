@@ -1,0 +1,135 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{titletoc}
+\usepackage{titlesec}
+\usepackage{geometry} 
+\usepackage{fontspec, xunicode, xltxtra}
+\usepackage{float}
+\usepackage{cite}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{titletoc}
+
+\geometry{left=3cm,right=3cm,top=3cm,bottom=3cm}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\logit}{logit}
+\DeclareMathOperator*{\var}{var}
+\DeclareMathOperator*{\expec}{E}
+
+\begin{document}
+\title{\textsf{Homework 2 for Bayesian Data Analysis}}
+\author{Fan JIN\quad (2015011506)}
+\maketitle
+
+\section*{Question 2.7a}
+{
+    $$p(\theta) \propto \theta^{-1} (1-\theta)^{-1}.$$
+
+    Denote $\phi = \logit(\theta) = \log{(\theta / (1-\theta))}$, one has $\theta = 1/(1+\exp{(-\phi)})$, and therefore,
+    $$p(\phi) \propto (\frac{1}{1 + \exp{(-\phi)}})^{-1} (1-\frac{1}{1 + \exp{(-\phi)}})^{-1} \cdot \left| \frac{\exp{(-\phi)}}{(1+\exp{(-\phi)})^2} \right| = 1,$$ which gives a uniform prior distribution for $\logit(\theta)$, or the natural parameter of the exponential family.
+}
+
+\section*{Question 2.7b}
+{
+    $$p(\theta|y) \propto \theta^{-1} (1-\theta)^{-1} \cdot \theta^{y} (1-\theta)^{n-y} = \theta^{y-1} (1-\theta)^{n-y-1}.$$
+
+    If $y=0$, then we have $$p(\theta|y) \propto \theta^{-1} (1-\theta)^{n-1},$$ whose integral in interval $[0, 1]$ is 
+    $$\int_0^1 {\theta^{-1} (1-\theta)^{n-1} \mathrm{d}\theta} = +\infty,$$ since $p(\theta|y)$ is of the same order as $1/\theta$ when $\theta \rightarrow 0$.
+
+    Likewise, if $y=n$, the integral is infinite when $\theta \rightarrow 1$. Therefore, the posterior distribution is improper if $y=0$ or $y=n$.
+}
+
+\section*{Question 2.12}
+{
+    $$\log{(p(y|\theta))} = \theta + y \log{(\theta)} - \log{(y!)},$$
+
+    $$J(\theta) = -\expec{( \frac{\mathrm{d}^2 \log{(p(y|\theta))}}{\mathrm{d}\theta^2} | \theta)} = -\expec{( -\frac{y}{\theta^2} | \theta)} = \frac{\expec{(y | \theta)}}{\theta^2} = \frac{1}{\theta}.$$
+
+    Hence, the Jeffery's prior density for $\theta$ is $$p(\theta) \propto [J(\theta)]^{1/2} = \theta^{-1/2}.$$
+
+    Compared with a $\mathrm{Gamma}(\alpha, \beta)$ distribution with prior $p(\theta) \propto \theta^{\alpha-1} \exp{(-\beta \theta)}$, we have $\alpha=1/2$ and $\beta=0$.
+}
+
+\section*{Question 3.1a}
+{
+    $$p(\theta) \propto \prod_1^J {{\theta_j}^{\alpha_j-1}},$$
+    $$p(y|\theta) \propto \prod_1^J {{\theta_j}^{y_j}},$$
+    $$p(\theta|y) \propto \prod_1^J {{\theta_j}^{y_j+\alpha_j-1}}.$$
+
+    Thus, by integrating $y_3, \cdots, y_J$, the joint posterior distribution of $\theta_1$ and $\theta_2$ is $$p(\theta_1, \theta_2 | y) \propto \theta_1^{y_1+\alpha_1-1} \theta_2^{y_2+\alpha_2-1}.$$
+
+    Under the variable substitution $\alpha = \theta_1 / (\theta_1+\theta_2)$ and $\beta = \theta_1 + \theta_2$, we have $$\theta_1 = \alpha \beta, \quad \theta_2 = (1-\alpha) \beta,$$ and
+    $$p(\alpha, \beta | y) = p(\theta_1, \theta_2) \cdot \left| \frac{\partial (\theta_1, \theta_2)}{\partial (\alpha, \beta)} \right| \propto (\alpha \beta)^{y_1+\alpha_1-1} \left((1-\alpha) \beta\right)^{y_2+\alpha_2-1} \cdot \left| \beta \right| $$
+    $$= \alpha^{y_1+\alpha_1-1} (1-\alpha)^{y_2+\alpha_2-1} \beta^{y_1+y_2+\alpha_1+\alpha_2-1}.$$
+
+    Therefore, the marginal posterior distribution of $\alpha$ is $$p(\alpha|y) = \int {p(\alpha, \beta | y) \mathrm{d}\beta} \propto \alpha^{y_1+\alpha_1-1} (1-\alpha)^{y_2+\alpha_2-1},$$ which is $\alpha|y \sim \mathrm{Gamma}(y_1+\alpha_1, y_2+\alpha_2).$
+}
+
+\section*{Question 3.1b}
+{
+    For a $\mathrm{Gamma}(\alpha_1, \alpha_2)$ prior distribution, and a $\mathrm{Binomial}$ sample with $y_1$ independent observations out of $y_1+y_2$ tests, we have the posterior distribution for the probability $\alpha$ is a $\mathrm{Gamma}(y_1+\alpha_1, y_2+\alpha_2)$. (See Homework 1) This posterior distribution is identical to the distribution obtained in (a).
+}
+
+\section*{Question 3.9}
+{
+    It is known that
+    $$p(y | \mu, \sigma^2) \propto \sigma^{-n} \exp{\left(-\frac{1}{2\sigma^2} \sum_1^n {(y_i-\mu)^2}\right)}$$
+    $$= \sigma^{-n} \exp{\left(-\frac{1}{2\sigma^2} \left[\sum_1^n {(y_i-\bar{y})^2} + n (\bar{y}-\mu)^2 \right]\right)}$$
+    $$= \sigma^{-n} \exp{\left(-\frac{1}{2\sigma^2} \left[(n-1)s^2 + n (\bar{y}-\mu)^2 \right]\right)},$$
+    and
+    $$p(\mu, \sigma^2) = p(\sigma^2) p(\mu | \sigma^2) \propto \sigma^{-1} (\sigma^2)^{-(\nu_0/2+1)} \exp{\left( -\frac{1}{2\sigma^2} \left[ \nu_0\sigma_0^2 + \kappa_0(\mu_0-\mu)^2 \right] \right)}.$$
+
+    Therefore, we have the joint posterior distribution
+    $$p(\mu, \sigma^2 | y) \propto p(y | \mu, \sigma^2) p(\mu, \sigma^2)$$
+    $$\propto \sigma^{-1} (\sigma^2)^{-((\nu_0+n)/2+1)} \exp{\left( -\frac{1}{2\sigma^2} \left[ (n-1)s^2 + n (\bar{y}-\mu)^2 + \nu_0\sigma_0^2 + \kappa_0(\mu_0-\mu)^2 \right] \right)},$$ 
+    which is identical to a N-Inv-$\chi^2 (\mu_n, \sigma_n^2; \nu_n, \sigma_n^2)$ distribution, or 
+    $$\sigma^{-1} (\sigma^2)^{-(\nu_n/2+1)} \exp{\left( -\frac{1}{2\sigma^2} \left[ \nu_n\sigma_n^2 + \kappa_n(\mu_n-\mu)^2 \right] \right)}.$$
+
+    Thus, by comparing the coefficients, we have $$\nu_n = \nu_0+n$$ and
+    $$(n-1)s^2 + n (\bar{y}-\mu)^2 + \nu_0\sigma_0^2 + \kappa_0(\mu_0-\mu)^2 = \nu_n\sigma_n^2 + \kappa_n(\mu_n-\mu)^2,$$ or
+    $$n+\kappa_0 = \kappa_n,$$
+    $$-2n\bar{y} - 2\kappa_0 \mu_0 = -2\kappa_n \mu_n,$$
+    $$(n-1)s^2 + n\bar{y}^2 + \nu_0\sigma_0^2 + \kappa_0 \mu_0^2 = \nu_n\sigma_n^2 + \kappa_n \mu_n^2,$$
+    the solution to which is 
+    $$\nu_n = \nu_0+n,$$
+    $$\kappa_n = \kappa_0+n,$$
+    $$\mu_n = \frac{n}{n+\kappa_0} \bar{y} + \frac{\kappa_0}{n+\kappa_0} \mu_0,$$
+    $$\nu_n\sigma_n^2 = (n-1)s^2 + \nu_0\sigma_0^2 + n\bar{y}^2 + \kappa_0 \mu_0^2 - \kappa_n \mu_n^2 = (n-1)s^2 + \nu_0\sigma_0^2 + \frac{\kappa_0 n}{\kappa_0 + n} (\bar{y}-\mu_0)^2.$$
+
+}
+
+\section*{Question 3.10}
+{
+    From the independency conditions, we have the joint posterior distribution
+    $$p(\mu_1, \sigma_1^2, \mu_2, \sigma_2^2 \mid y) \propto \sigma_1^{-n_1-2} \sigma_2^{-n_2-2} \exp{\left( - \frac{1}{2\sigma_1^2} \sum_{j=1}^{n_1}{(y_{1j}-\mu_1)^2} - \frac{1}{2\sigma_2^2} \sum_{j=1}^{n_2}{(y_{2j}-\mu_2)^2} \right)}$$
+    $$= \sigma_1^{-n_1-2} \sigma_2^{-n_2-2} \exp{\left( - \frac{1}{2\sigma_1^2} {\left[ (n_1-1)s_1^2 + n_1 (\bar{y_1} - \mu_1)^2 \right]} \right)} \exp{\left( - \frac{1}{2\sigma_2^2} {\left[ (n_2-1)s_2^2 + n_2 (\bar{y_2} - \mu_2)^2 \right]} \right)}.$$
+
+    Recall that $$\int {\exp{\left(-\frac{n_1}{2\sigma_1^2} (\bar{y_1}^2 - \mu_1)^2 \right)} \mathrm{d}\mu_1} = (2\pi)^{1/2} \sigma_1 / \sqrt{n_1},$$ we have the integral
+    $$p(\sigma_1^2, \sigma_2^2 \mid y) = \int {p(\mu_1, \sigma_1^2, \mu_2, \sigma_2^2 | y) \mathrm{d}\mu_1 \mathrm{d}\mu_2} $$
+    $$\propto \sigma_1^{-n_1-2} \sigma_2^{-n_2-2} \exp{\left( - \frac{1}{2\sigma_1^2} {\left[ (n_1-1)s_1^2 \right]} \right)}  \exp{\left( - \frac{1}{2\sigma_2^2} {\left[ (n_2-1)s_2^2 \right]} \right)} \cdot \sigma_1 \sigma_2$$
+    $$\propto \sigma_1^{-n_1-1} \sigma_2^{-n_2-1} \exp{\left( - \frac{(n_1-1)s_1^2}{2\sigma_1^2} \right)} \exp{\left( - \frac{(n_2-1)s_2^2}{2\sigma_2^2} \right)}$$
+    $$\propto \left(\frac{s_1^2}{\sigma_1^2}\right)^{(n_1+1)/2} \left(\frac{s_2^2}{\sigma_2^2}\right)^{(n_2+1)/2} \exp{\left( - \frac{(n_1-1)s_1^2}{2\sigma_1^2} \right)} \exp{\left( - \frac{(n_2-1)s_2^2}{2\sigma_2^2} \right)}.$$
+
+    Denote $u_1 = \frac{s_1^2}{\sigma_1^2}$, $u_2 = \frac{s_2^2}{\sigma_2^2}$, we have
+    $$p(u_1, u_2 \mid y) \propto \left(u_1\right)^{(n_1+1)/2} \left(u_2\right)^{(n_2+1)/2} \exp{\left( - \frac{(n_1-1)}{2} u_1 \right)} \exp{\left( - \frac{(n_2-1)}{2} u_2 \right)} \cdot \left| \frac{1}{u_1^2} \frac{1}{u_1^2} \right|$$
+    $$= \left(u_1\right)^{(n_1-3)/2} \left(u_2\right)^{(n_2-3)/2} \exp{\left( - \frac{(n_1-1)}{2} u_1 \right)} \exp{\left( - \frac{(n_2-1)}{2} u_2 \right)}$$
+    and that $u_1$ is independent of $u_2$.
+    
+    By variable substitution $v_1 = u_1/u_2$ and $v_2 = u_2$, or $u_1 = v_1 v_2$ and $u_2 = v_2$, we have
+    $$p(v_1, v_2 \mid y) \propto \left(v_1 v_2\right)^{(n_1-3)/2} \left(v_2\right)^{(n_2-3)/2} \exp{\left( - \frac{(n_1-1)}{2} v_1 v_2 \right)} \exp{\left( - \frac{(n_2-1)}{2} v_2 \right)} \cdot \left| v_2 \right|$$
+    $$ = (v_1)^{(n_1-2)/2} \cdot (v_2)^{(n_1+n_2-2)/2} \cdot \exp{\left( -\frac{(n_1-1)v_1 + (n_2-1)}{2} v_2 \right)}.$$
+
+    Note that the gamma distribution\footnote{https://en.wikipedia.org/wiki/Gamma\_distribution}, we have 
+    $$ p(v_1 \mid y) = \int_0^\infty {p(v_1, v_2 \mid y) \mathrm{d}v_2} $$
+    $$= \int_0^\infty {(v_1)^{(n_1-3)/2} \cdot (v_2)^{(n_1+n_2-4)/2} \cdot \exp{\left( -\frac{(n_1-1)v_1 + (n_2-1)}{2} v_2 \right)} \mathrm{d}v_2}$$
+    $$= (v_1)^{(n_1-3)/2} \cdot \frac{\Gamma(\alpha_0)}{\beta_0^{\alpha_0}}$$
+    $$ \propto (v_1)^{(n_1-3)/2} \cdot \left(\frac{(n_1-1)v_1 + (n_2-1)}{2} \right)^{-(n_1+n_2-2)/2},$$
+    where $\alpha_0 = (n_1+n_2-2)/2$ and $\beta_0 = (n_1-1)v_1 + (n_2-1))/2$.
+
+    Compare the expression above with the pdf of $F$ distributions\footnote{https://en.wikipedia.org/wiki/F-distribution}, we have $$v_1 \mid y \sim F(n_1-1, n_2-1)$$.
+}
+
+
+\clearpage
+\end{document}

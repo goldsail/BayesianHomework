@@ -1,0 +1,133 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{titletoc}
+\usepackage{titlesec}
+\usepackage{geometry} 
+\usepackage{fontspec, xunicode, xltxtra}
+\usepackage{float}
+\usepackage{cite}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{titletoc}
+
+\geometry{left=3cm,right=3cm,top=3cm,bottom=3cm}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\logit}{logit}
+\DeclareMathOperator*{\var}{var}
+\DeclareMathOperator*{\cov}{cov}
+\DeclareMathOperator*{\expec}{E}
+\DeclareMathOperator*{\deriv}{d}
+\DeclareMathOperator*{\const}{constant}
+
+\begin{document}
+\title{\textsf{Homework 3 for Bayesian Data Analysis}}
+\author{Fan JIN\quad (2015011506)}
+\maketitle
+
+\section*{Question 4.4}
+{
+    \begin{itemize}
+
+        \item{In terms of $\theta$: } Under the regularity conditions, we have the asymptotic distribution
+        $$p(\theta | y) \rightarrow N(\hat{\theta}, [I(\hat{\theta})]^{-1}),$$ where $$\left[ \frac{\deriv}{\deriv \theta} \log{p(\theta|y)} \right]_{\theta = \hat{\theta}} = 0,$$ and $$I(\theta) = -\frac{\deriv^2}{\deriv \theta^2} \log{p(\theta|y)}.$$
+    
+        \item{In terms of $\phi$: } Under the regularity conditions, we have the asymptotic distribution
+        $$p(\phi | y) \rightarrow N(\hat{\phi}, [I(\hat{\phi})]^{-1}),$$ where $$\left[ \frac{\deriv}{\deriv \phi} \log{p(\phi|y)} \right]_{\phi = \hat{\phi}} = 0,$$ and $$I(\phi) = -\frac{\deriv^2}{\deriv \phi^2} \log{p(\phi|y)}.$$    
+    
+    \end{itemize}
+
+    It is worth noting that the right hand side is not a normal distribution with fixed mean and variance; instead, the mean $\hat{\theta}$ and variance $[I(\hat{\theta})]^{-1}$ are functions of the sample, and therefore denpend on the sample size. The variance $[I(\hat{\theta})]^{-1}$, moreover, converges to $0$ as the sample size increases. In the statement that a nonlinear transform of a normal distribution is no longer normal, however, the topical normal distribution must have fixed parameters. Otherwise, the statement does not hold since its prerequisites are not satisfied. 
+
+}
+
+\section*{Question 4.7}
+{
+    The Bayesian posterior estimate is $\expec{(\theta|y)}.$
+
+    We have the integrated Bayes risk 
+    $$0 \leq \expec_\theta{ \left\{ \expec_y {\left[ (\expec_\theta{(\theta|y)} - \theta)^2 | \theta \right]} \right\} }$$
+    $$= \expec_\theta{ \left\{ \expec_y{ \left[ (\expec_\theta{(\theta|y)})^2 | \theta \right]} \right\} } 
+        - \expec_\theta{ \left\{ \expec_y{ \left[ \theta \cdot \expec_\theta{(\theta|y)} | \theta \right]} \right\} }
+        - \expec_\theta{ \left\{ \expec_y{ \left[ \theta \cdot \expec_\theta{(\theta|y)} | \theta \right]} \right\} }
+        + \expec_\theta{ \left\{ \expec_y{ \left[ \theta^2 | \theta \right]} \right\} }$$
+    $$= \expec_\theta{ \left\{ \expec_y{ \left[ (\expec_\theta{(\theta|y)})^2 | \theta \right]} \right\} } 
+        - \expec_\theta{ \left\{ \theta \cdot \expec_y{ \left[ \expec_\theta{(\theta|y)} | \theta \right]} \right\} }
+        - \expec_y{ \left\{ \expec_\theta{ \left[ \theta \cdot \expec_\theta{(\theta|y)} | y \right]} \right\} }
+        + \expec_\theta{ \left\{ \theta^2 \right\} }$$
+    $$= \expec_y{ \left[ (\expec_\theta{(\theta|y)})^2 | \theta \right] } 
+        - \expec_\theta{ \left\{ \theta \cdot \expec_y{ \left[ \expec_\theta{(\theta|y)} | \theta \right]} \right\} }
+        - \expec_y{ \left\{ \expec_\theta{(\theta|y)} \cdot \expec_\theta{ \left[ \theta | y \right]} \right\} }
+        + \expec_\theta{ \left\{ \theta^2 \right\} }$$
+    $$= - \expec_\theta{ \left\{ \theta \cdot \expec_y{ \left[ \expec_\theta{(\theta|y)} | \theta \right]} \right\} }
+        + \expec_\theta{ \left\{ \theta^2 \right\} }.$$
+    
+    Assume that it were unbiased, i.e.
+    $$\int {\expec_\theta{(\theta|y)} \cdot p(y|\theta_0) \deriv y} = \theta_0$$
+    for any $\theta_0$ in the parameter space. Set $\theta_0 = \theta$, and it would give 
+    $$\expec_y{ \left[ \expec_\theta{(\theta|y)} | \theta \right]} = \theta.$$
+    Thus, the integrated Bayes risk, \emph{if not infinite}, would be 
+    $$- \expec_\theta{ \left\{ \theta \cdot \expec_y{ \left[ \expec_\theta{(\theta|y)} | \theta \right]} \right\} }
+    + \expec_\theta{ \left\{ \theta^2 \right\} }$$
+    $$= - \expec_\theta{ \left\{ \theta \cdot \theta \right\} }
+    + \expec_\theta{ \left\{ \theta^2 \right\} } = 0.$$
+
+    The integrated Bayes risk can be infinite for improper prior distributions, so the result above is not valid at all. In case of proper prior distributions, however, the integrated Bayes risk must be finite and greater than 0 \emph{if not in degenerate problems}, which contradicts the calculation above. This paradox indicates that our assumption is not correct that the Bayesian posterior mean were unbiased. 
+    
+    We therefore conclude that the Bayesian posterior mean cannot be unbiased, giben that the prior distribution is proper (the expectations are finite in our calculation) and the problem is not degenerate (the integrated Bayes risk is not exactly zero).
+
+}
+
+\section*{Question 5.5}
+{
+    For all $(i, j)$, the joint distribution of $(\theta_i, \theta_j)$ is
+    $$p(\theta_i, \theta_j) = \int { \left[ \prod_{k} p(\theta_j | \phi) \right] \cdot p(\phi) \deriv{\phi} \cdot \left[ \prod_{k \neq i}^{k \neq j} {\deriv \theta_j} \right] }$$
+    $$= \int { p(\theta_i | \phi) p(\theta_j | \phi) \cdot p(\phi) \deriv{\phi} }.$$
+    From this result, it is clear that $\theta_i$ and $\theta_j$ are i.i.d. conditioning on $\phi$, which means 
+    $$\expec{(\theta_i | \phi)} = \expec{(\theta_j | \phi)} = g(\phi),$$ 
+    and $$\expec{(\theta_i \theta_j | \phi)} = \expec{(\theta_i | \phi)} \cdot \expec{(\theta_j | \phi)},$$ 
+    where $g(\phi)$ is a function of the random variable $\phi$. Hence,
+
+    $$\cov{(\theta_i, \theta_j)} = \expec{(\theta_i \theta_j)} - \expec{(\theta_i)} \expec{(\theta_j)}$$
+    $$= \expec{\left[\expec{(\theta_i \theta_j | \phi)}\right]} - \expec{\left[\expec{(\theta_i | \phi)}\right]} \cdot \expec{\left[\expec{(\theta_j | \phi)} \right]}$$
+    $$= \expec{\left[ \expec{(\theta_i | \phi)} \cdot \expec{(\theta_j | \phi)} \right]} - \expec{\left[\expec{(\theta_i | \phi)}\right]} \cdot \expec{\left[\expec{(\theta_j | \phi)} \right]}$$
+    $$= \expec{\left[ g(\phi) \cdot g(\phi) \right]} - \expec{\left[ g(\phi) \right]} \cdot \expec{\left[ g(\phi) \right]}$$
+    $$= \var{(g(\phi))} \geq 0.$$
+    
+    
+}
+
+\section*{Question 5.4a}
+{
+    Since we have no idea which parameter comes from which distribution, the joint distribution of $\theta_1, \cdots, \theta_{2J}$ does not rely on the permutation of indeces:
+    $$p(\theta_1, \cdots, \theta_{2J}) \propto \sum_{p} { \left[ \prod_{k=1}^{J} {N(\theta_{p(k) | 1, 1})} \prod_{k=J+1}^{2J} {N(\theta_{p(k) | -1, 1})} \right] }.$$
+
+    By definition, $\theta_1, \cdots, \theta_{2J}$ are exchangeable.
+}
+
+\section*{Question 5.4b}
+{
+    \textbf{Proof by contradiction:}\quad Assume the distribution of $(\theta_1, \cdots, \theta_{2J})$ could be written as a mixture of i.i.d. components. According to Question 5.5, we would then have $$\cov{(\theta_i, \theta_j)} \geq 0.$$
+
+    Define random variables (hyperparamters) $\phi_1, \cdots, \phi_{2J}$, half being $1$ and the other half being $-1$. Thus, we have 
+    $$\expec{(\phi_1 | \phi_i=1)} = \cdots = \expec{(\phi_{i-1} | \phi_i=1)} = \expec{(\phi_{i+1} | \phi_i=1)} = \cdots \expec{(\phi_{2J} | \phi_i=1)},$$
+    and
+    $$\expec{(\phi_1 + \cdots + \phi_{i-1} + \phi_{i+1} \cdots \phi_{2J} | \phi_i=1)} = \expec{((0 - \phi_i) | \phi_i=1)} = -1.$$
+    Therefore, we have $$\expec{(\phi_j \mid \phi_i=1)} = -\frac{1}{2J-1} < 0$$ and likewise $$\expec{(\phi_j \mid \phi_i=-1)} = \frac{1}{2J-1} > 0.$$ This means $$\cov{(\phi_i, \phi_j)} < 0$$ for any $i \neq j$.
+    
+    The model can then be written as $$\theta_i | \phi_i \sim N(\phi_i, 1)$$ for any $i$. By applying the total covariance formula, and noting that $\cov{(\theta_i, \theta_j | \phi_i, \phi_j)} = 0$ for conditional independence, we have
+    $$\cov{(\theta_i, \theta_j)} = \expec{\left[ \cov{(\theta_i, \theta_j | \phi_i, \phi_j)} \right]} + \cov{\left[ \expec{(\theta_i | \phi_i, \phi_j)} \cdot \expec{(\theta_j | \phi_i, \phi_j)}\right]}$$
+    $$= \expec{(0)} + \cov{( \phi_i, \phi_j )} < 0, $$ which contradicts what we concluded in Question 5.5.
+
+    Therefore, our assumption cannot be true, and we conclude that the distribution of $(\theta_1, \cdots, \theta_{2J})$ cannot be written as a mixture of i.i.d. components.
+}
+
+\section*{Question 5.4c}
+{
+    The de Finetti's theorem holds if we have each sample independently assigned into one of the two categories, whereas in this case we cluster exactly half the samples into one category. As $J \rightarrow \infty$, 
+    $$\expec{(\phi_i | \phi_j)} = -\frac{\phi_j}{2J-1} \rightarrow 0,$$ which means the correlation between the two samples diminishes. Thus, the difference between the two situations disappears as $J \rightarrow \infty$, and therefore this is not a counterexample.
+}
+
+
+\clearpage
+\end{document}

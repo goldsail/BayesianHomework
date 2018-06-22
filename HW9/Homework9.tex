@@ -1,0 +1,128 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{titletoc}
+\usepackage{titlesec}
+\usepackage{geometry} 
+\usepackage{fontspec, xunicode, xltxtra}
+\usepackage{float}
+\usepackage{cite}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{titletoc}
+\usepackage{booktabs}
+
+\geometry{left=3cm,right=3cm,top=3cm,bottom=3cm}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\logit}{logit}
+\DeclareMathOperator*{\var}{var}
+\DeclareMathOperator*{\cov}{cov}
+\DeclareMathOperator*{\expec}{E}
+\DeclareMathOperator*{\deriv}{d}
+\DeclareMathOperator*{\const}{constant}
+
+\begin{document}
+\title{\textsf{Homework 9 for Bayesian Data Analysis}}
+\author{Fan JIN\quad (2015011506)}
+\maketitle
+
+\section*{Question 14.3}
+{
+    Assuming uniform prior distribution for $\beta|\sigma$, we have
+    $$p(\beta|\sigma, y) \propto p(y | \beta, \sigma) p(\beta | \sigma)$$
+    $$\propto p(y | \beta, \sigma) \propto \exp{\left( -\frac{1}{2\sigma^2} (y-X\beta)^T (y-X\beta) \right)}.$$
+
+    Note the fact that $$(y-X\beta)^T (y-X\beta) = (\beta-\hat{\beta})^T X^T X (\beta-\hat{\beta}) + \const,$$ we have
+    $$p(\beta|\sigma, y) \propto \exp{\left( -\frac{1}{2\sigma^2} (y-X\beta)^T (y-X\beta) \right)}$$
+    $$\propto \exp{\left( -\frac{1}{2\sigma^2} (\beta-\hat{\beta})^T X^T X (\beta-\hat{\beta}) \right)}$$
+    $$= \exp{\left( -\frac{1}{2} (\beta-\hat{\beta})^T ((X^T X)^{-1} \sigma^2)^{-1} (\beta-\hat{\beta}) \right)},$$
+    which implies that $$\beta | \sigma, y \sim N(\hat{\beta}, (X^T X)^{-1} \sigma^2).$$
+}
+
+\section*{Question 14.4}
+{
+    Assuming the noninformative prior $p(\beta, \log{\sigma}) \propto 1$, or $p(\beta, \sigma^2) \propto \sigma^{-2}$, we obtain
+    $$p(\sigma | y) = p(\beta, \sigma^2 | y) / p(\beta | \sigma^2, y) \propto p(\beta, \sigma^2) p(y | \beta, \sigma^2) / p(\beta | \sigma^2, y)$$
+    $$\propto \frac{\sigma^{-2} \cdot \sigma^{-n} \exp{\left( -\frac{1}{2\sigma^2} (y-X\beta)^T (y-X\beta) \right)}}{[\det{((X^T X)^{-1} \sigma^2)]^{-1/2} \cdot \exp{\left( -\frac{1}{2\sigma^2} (\beta-\hat{\beta})^T X^T X (\beta-\hat{\beta}) \right)}}}$$
+
+    Fix $\beta = \hat{\beta}$ in the formula above, and it follows that
+    $$p(\sigma | y) \propto \frac{\sigma^{-2} \cdot \sigma^{-n} \exp{\left( -\frac{1}{2\sigma^2} (y-X\hat{\beta})^T (y-X\hat{\beta}) \right)}}{[\det{((X^T X)^{-1} \sigma^2)]^{-1/2}}}$$
+    $$= \frac{\sigma^{-2} \cdot \sigma^{-n} \exp{\left( -\frac{1}{2\sigma^2} (y-X\hat{\beta})^T (y-X\hat{\beta}) \right)}}{[\sigma^{2k} \cdot \det{((X^T X)^{-1})]^{-1/2}}}$$
+    $$\propto \sigma^{-2-n+k} \cdot \exp{\left( -\frac{1}{2\sigma^2} (y-X\hat{\beta})^T (y-X\hat{\beta}) \right)}.$$
+
+    Compare this expression to the Inverse-$\chi^2$ distribution\footnote{https://en.wikipedia.org/wiki/Inverse-chi-squared\_distribution}, we find that 
+    $$s^2 = \frac{1}{n-k} (y-X\hat{\beta})^T (y-X\hat{\beta}).$$
+}
+
+\section*{Question 14.7}
+{
+    $\widetilde{y}$ conforms a normal distribution, as $\widetilde{y}$ is a linear combination of $\beta$, and $p(\beta | \sigma, y)$ is normal.
+}
+
+\section*{Longley data 1}
+{
+    The mean of Inverse-$\mathrm{\chi^2}(n-k, s^2)$ is\footnote{https://en.wikipedia.org/wiki/Scaled\_inverse\_chi-squared\_distribution} 
+    $$\frac{(n-k)s^2}{n-k-2}.$$
+    The calculated result is 
+    \begin{lstlisting}
+        [1] 6.003243
+    \end{lstlisting}
+}
+
+\section*{Longley data 2}
+{
+    The posterior mean of $\beta$ under a conjugate prior $(\beta_0, \beta_1) \sim N(0, I)$ is
+    \begin{lstlisting}
+    (Intercept)           X 
+     -76.759663    1.519031 
+    \end{lstlisting}
+}
+
+\section*{Longley data 3}
+{
+    \begin{lstlisting}
+    > mod.full = BayesReg(dat$GNP.deflator, dat[, -1], g=nrow(dat))
+
+    PostMean PostStError Log10bf EvidAgaH0
+    Intercept 101.6813      0.7431                  
+    x1         23.8697     25.1230 -0.3966          
+    x2          3.1068      6.6053 -0.5603          
+    x3          0.7078      2.5134 -0.5954          
+    x4        -11.0111     10.9543 -0.3714          
+    x5         -6.1556     32.7640 -0.6064          
+    x6          0.7402     10.7025  -0.614          
+
+
+    Posterior Mean of Sigma2: 8.8342
+    Posterior StError of Sigma2: 13.0037
+
+    > mod = BayesReg(dat$GNP.deflator, dat[, c(-1, -3)], g=nrow(dat))
+
+    PostMean PostStError Log10bf EvidAgaH0
+    Intercept 101.6813      0.7494                  
+    x1         14.6884     15.9493 -0.4094          
+    x2         -0.3300      1.2139 -0.5968          
+    x3         -9.9863     10.8264 -0.4087          
+    x4          8.6301      9.3120 -0.4068          
+    x5         -3.5398      5.6814 -0.5194          
+
+
+    Posterior Mean of Sigma2: 8.9846
+    Posterior StError of Sigma2: 13.2249
+
+    > bf.full / bf
+    Bayes factor analysis
+    --------------
+    [1] GNP + Unemployed + Armed.Forces + Population + Year + Employed : 0.1443632 ±0%
+
+    Against denominator:
+    GNP.deflator ~ GNP + Armed.Forces + Population + Year + Employed 
+    ---
+    Bayes factor type: BFlinearModel, JZS
+    \end{lstlisting}
+
+    We find that the reduced model has similar coefficients to the full model. And the ratio of Bayes factor is much less than 1, which means the reduced model is more likely. 
+}
+
+\clearpage
+\end{document}
